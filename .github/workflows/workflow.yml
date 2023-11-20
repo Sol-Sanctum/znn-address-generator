@@ -55,8 +55,8 @@ jobs:
           chmod +x znn-address-generator-macos
       - name: Generate checksums
         run: |
-          echo $(sha256sum <(find . -type f -exec sha256sum \; | sort))
-          echo $(sha256sum <(find . -type f -exec sha256sum \; | sort)) >> SHA256CHECKSUMS.txt
+          echo $(sha256sum *)
+          echo $(sha256sum *) >> SHA256CHECKSUMS.txt
       - name: Upload files to a GitHub release
         uses: svenstaro/upload-release-action@2.6.1
         with:
