@@ -1,0 +1,69 @@
+name: Build on Push
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-matrix:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        include:
+          - os: ubuntu-latest
+            output-name: znn-address-generator-linux
+          - os: macOS-latest
+            output-name: znn-address-generator-macos
+          - os: windows-latest
+            output-name: znn-address-generator-windows.exe
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@v1.5.0
+      - name: Install dependencies
+        run: dart pub get
+      - name: Build znn-address-generator
+        run: dart compile exe main.dart -o ${{ matrix.output-name }}
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}-artifacts
+          path: ${{ matrix.output-name }}
+  make-release:
+    needs: [build-matrix]
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: ubuntu-latest-artifacts
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: macOS-latest-artifacts
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: windows-latest-artifacts
+      - name: Update file permissions
+        run: |
+          chmod +x znn-address-generator-linux
+          chmod +x znn-address-generator-macos
+      - name: Generate checksums
+        run: |
+          echo $(sha256sum <(find . -type f -exec sha256sum \; | sort))
+          echo $(sha256sum <(find . -type f -exec sha256sum \; | sort)) >> SHA256CHECKSUMS.txt
+      - name: Upload files to a GitHub release
+        uses: svenstaro/upload-release-action@2.6.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          release_name: "Zenon Address Generator v0.0.1"
+          file: ./*
+          tag: ${{ github.ref }}
+          file_glob: true
+          overwrite: true
+          body: "Generate infinite Zenon addresses and save them to a file."
