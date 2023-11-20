@@ -2,17 +2,24 @@
 
 Concurrently generate mnemonics and addresses, then save them to disk.
 
-### Setup
+## Setup
 ```bash
 git clone https://github.com/Sol-Sanctum/znn-address-generator.git && cd znn-address-generator
 dart pub get
-dart run main.dart
+dart run main.dart -n 1000
 ```
 
-### Releases
-Download compiled versions of the generator [here](https://github.com/Sol-Sanctum/znn-address-generator/releases/latest).
+## Releases
+Download compiled versions of the generator [here](https://github.com/Sol-Sanctum/znn-address-generator/releases/latest).  
 
-### Options
+**Example**
+```bash
+wget https://github.com/Sol-Sanctum/znn-address-generator/releases/download/master/znn-address-generator-macos
+chmod +x ./znn-address-generator-macos
+./znn-address-generator-macos -n 1000
+```
+
+## Options
 ```bash
 Zenon Address Generator
 Usage: znn-address-generator [OPTIONS]
