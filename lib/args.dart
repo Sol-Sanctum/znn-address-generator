@@ -6,7 +6,7 @@ import 'package:znn_address_generator/settings.dart';
 
 import 'helper.dart';
 
-parseArgs(List<String> args) {
+parseArgs(List<String> args) async {
   final ArgParser argParser = ArgParser();
   argParser.addOption('threads',
       abbr: 't', defaultsTo: '4', help: 'number of cpu threads');
@@ -89,6 +89,8 @@ parseArgs(List<String> args) {
 
   if (argResult.wasParsed('output')) {
     Settings.filename = argResult['output'];
+  } else {
+    await Directory('./results').create(recursive: true);
   }
 
   if (argResult['verbose']) {
